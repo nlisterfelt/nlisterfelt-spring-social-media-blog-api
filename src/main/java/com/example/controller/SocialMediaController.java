@@ -1,13 +1,17 @@
 package com.example.controller;
 
+import javax.naming.AuthenticationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
+import com.example.entity.Message;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 
@@ -32,5 +36,21 @@ public class SocialMediaController {
     public ResponseEntity<Account> register(@RequestBody Account account){
         accountService.register(account);
         return ResponseEntity.status(HttpStatus.OK).body(account);
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<Account> login(@RequestBody Account account) throws AuthenticationException{
+        accountService.login(account.getUsername(), account.getPassword());
+        return ResponseEntity.status(HttpStatus.OK).body(account);
+    }
+
+    @PostMapping("messages")
+    public ResponseEntity<Message> createMessage(@RequestBody Message message){
+        boolean successful = messageService.createMessage(message);
+        if(successful==true){
+            return ResponseEntity.status(HttpStatus.OK).body(message);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 }
