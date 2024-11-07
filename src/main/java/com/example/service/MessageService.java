@@ -47,18 +47,19 @@ public class MessageService {
         if(userMessages.isPresent()) return userMessages.get();
         return null;
     }
-    public Message deleteMessage (int messageId){
-        Optional<Message> foundMessage = messageRepository.findByMessageId(messageId);
-        if(foundMessage.isPresent()){
+    public boolean deleteMessage (int messageId){
+        Optional<Message> optionalMessage = messageRepository.findByMessageId(messageId);
+        if(optionalMessage.isPresent()){
             messageRepository.deleteByMessageId(messageId);
-            return foundMessage.get();
+            return true;
         } else {
-            return null;
+            return false;
         }
     }
     public Message updateMessage(int messageId, String messageText){
-        Message updatedMessage = messageRepository.findByMessageId(messageId).get();
-        if(messageText.length()>0 && messageText.length()<=255){
+        Optional<Message> optionalMessage = messageRepository.findByMessageId(messageId);
+        if(optionalMessage.isPresent() && messageText.length()>0 && messageText.length()<=255){
+            Message updatedMessage = optionalMessage.get();
             updatedMessage.setMessageText(messageText);
             messageRepository.save(updatedMessage);
             return updatedMessage;

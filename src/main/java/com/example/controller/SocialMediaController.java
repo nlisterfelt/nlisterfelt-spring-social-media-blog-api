@@ -92,10 +92,8 @@ public class SocialMediaController {
 
     @DeleteMapping("messages/{messageId}")
     public ResponseEntity<Integer> deleteMessage(@PathVariable int messageId){
-        Message foundMessage = messageService.deleteMessage(messageId);
-        if(foundMessage!=null){
-            return ResponseEntity.status(HttpStatus.OK).body(1);
-        }
+        boolean success = messageService.deleteMessage(messageId);
+        if(success) return ResponseEntity.status(HttpStatus.OK).body(1);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
