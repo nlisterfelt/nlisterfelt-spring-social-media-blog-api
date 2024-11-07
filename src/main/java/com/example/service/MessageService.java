@@ -15,10 +15,12 @@ import com.example.repository.MessageRepository;
 
 @Service
 public class MessageService {
+    @Autowired
     private MessageRepository messageRepository;
+    @Autowired
     private AccountRepository accountRepository;
 
-    @Autowired
+    
     public MessageService(MessageRepository messageRepository, AccountRepository AccountRepository){
         this.messageRepository = messageRepository;
         this.accountRepository = accountRepository;
@@ -36,27 +38,31 @@ public class MessageService {
         return messageRepository.findAll();
     }
     public Message findMessageById(int messageId){
-        return messageRepository.findByMessageId(messageId);
+        Optional<Message> foundMessage = messageRepository.findByMessageId(messageId);
+        if(foundMessage.isPresent()) return foundMessage.get();
+        return null;
     }
     public List<Message> getMessagesByAccountId (int accountId)  {
-        List<Message> userMessages = messageRepository.findByPostedBy(accountId);
-        return userMessages;
+        Optional<List<Message>> userMessages = messageRepository.findByPostedBy(accountId);
+        if(userMessages.isPresent()) return userMessages.get();
+        return null;
     }
-    public boolean deleteMessage (int messageId){
-        Message foundMessage = messageRepository.findByMessageId(messageId);
-        if(foundMessage!=null){
+    public Message deleteMessage (int messageId){
+        Optional<Message> foundMessage = messageRepository.findByMessageId(messageId);
+        if(foundMessage.isPresent()){
             messageRepository.deleteByMessageId(messageId);
-            return true;
+            return foundMessage.get();
         } else {
-            return false;
+            return null;
         }
     }
     public Message updateMessage(int messageId, String messageText){
-        Message updatedMessage = messageRepository.findByMessageId(messageId);
+        Message updatedMessage = messageRepository.findByMessageId(messageId).get();
         if(messageText.length()>0 && messageText.length()<=255){
             updatedMessage.setMessageText(messageText);
+            messageRepository.save(updatedMessage);
+            return updatedMessage;
         }
-        messageRepository.save(updatedMessage);
-        return updatedMessage;
+        return null;
     }
 }

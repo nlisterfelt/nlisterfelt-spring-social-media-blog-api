@@ -32,10 +32,11 @@ import com.example.service.MessageService;
  */
 @RestController
 public class SocialMediaController {
+    @Autowired
     MessageService messageService;
+    @Autowired
     AccountService accountService;
 
-    @Autowired
     public SocialMediaController(MessageService messageService, AccountService accountService){
         this.messageService = messageService;
         this.accountService = accountService;
@@ -64,7 +65,7 @@ public class SocialMediaController {
     @PostMapping("messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message message){
         boolean status = messageService.createMessage(message);
-        if(status==true){
+        if(status){
             return ResponseEntity.status(HttpStatus.OK).body(message);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -78,29 +79,31 @@ public class SocialMediaController {
 
     @GetMapping("messages/{messageId}")
     public ResponseEntity<Message> getMessageById(@PathVariable int messageId){
-       return ResponseEntity.status(HttpStatus.OK).body(messageService.findMessageById(messageId));
+        Message foundMessage = messageService.findMessageById(messageId);
+        return ResponseEntity.status(HttpStatus.OK).body(foundMessage);
     }
 
     @GetMapping("account/{acccountId}/messages")
-    public ResponseEntity<List<Message>> getAllMessagesbyUserId(@PathVariable int accountId){
+    public ResponseEntity<List<Message>> getAllMessagesbyAccountId(@PathVariable int accountId){
         List<Message> userMessages = messageService.getMessagesByAccountId(accountId);
-        if(userMessages==null) return ResponseEntity.status(HttpStatus.OK).body(null);
-        return ResponseEntity.status(HttpStatus.OK).body(userMessages);
+        if(userMessages!=null) return ResponseEntity.status(HttpStatus.OK).body(userMessages);
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @DeleteMapping("messages/{messageId}")
     public ResponseEntity<Integer> deleteMessage(@PathVariable int messageId){
-        boolean success = messageService.deleteMessage(messageId);
-        if(success==true){
+        Message foundMessage = messageService.deleteMessage(messageId);
+        if(foundMessage!=null){
             return ResponseEntity.status(HttpStatus.OK).body(1);
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PatchMapping("messages/{messageId}")
-    public ResponseEntity<Message> updateMessage(@PathVariable int messageId, @RequestBody HashMap data){
+    public ResponseEntity<Integer> updateMessage(@PathVariable int messageId, @RequestBody HashMap data){
         String newMessageText = (String) data.get("messageText");
         Message updatedMessage = messageService.updateMessage(messageId,newMessageText);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedMessage);
+        if(updatedMessage!=null) return ResponseEntity.status(HttpStatus.OK).body(1);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
 }
