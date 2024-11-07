@@ -48,8 +48,12 @@ public class SocialMediaController {
 
     @PostMapping("login")
     public ResponseEntity<Account> login(@RequestBody Account account) throws AuthenticationException{
-        accountService.login(account.getUsername(), account.getPassword());
-        return ResponseEntity.status(HttpStatus.OK).body(account);
+        Account foundAccount = accountService.login(account.getUsername(), account.getPassword());
+        if(foundAccount!=null){
+            return ResponseEntity.status(HttpStatus.OK).body(foundAccount);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 
     @PostMapping("messages")

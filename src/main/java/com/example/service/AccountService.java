@@ -1,5 +1,7 @@
 package com.example.service;
 
+import java.util.Optional;
+
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,12 @@ public class AccountService {
         accountRepository.save(newAccount);
     }
 
-    public void login(String username, String password) throws AuthenticationException{
-        accountRepository.findByUsernameAndPassword(username, password);
-
+    public Account login(String username, String password){
+        Optional<Account> foundAccount = accountRepository.findByUsernameAndPassword(username, password);
+        if(foundAccount.isPresent()){
+            return foundAccount.get();
+        } else {
+            return null;
+        }
     }
 }
