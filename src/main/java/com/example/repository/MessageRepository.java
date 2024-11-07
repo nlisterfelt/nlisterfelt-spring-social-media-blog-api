@@ -9,11 +9,9 @@ import org.springframework.stereotype.Repository;
 import com.example.entity.Message;
 
 @Repository
-public interface MessageRepository extends JpaRepository<Message, String>{
+public interface MessageRepository extends JpaRepository<Message, Integer>{
     Optional<Message> findByMessageId(int messageId);
 
     Optional<List<Message>> findByPostedBy(int postedBy);
-
-    void deleteByMessageId(int messageId);
 
 }

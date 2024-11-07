@@ -50,7 +50,7 @@ public class MessageService {
     public boolean deleteMessage (int messageId){
         Optional<Message> optionalMessage = messageRepository.findByMessageId(messageId);
         if(optionalMessage.isPresent()){
-            messageRepository.deleteByMessageId(messageId);
+            messageRepository.deleteById(messageId);
             return true;
         } else {
             return false;
