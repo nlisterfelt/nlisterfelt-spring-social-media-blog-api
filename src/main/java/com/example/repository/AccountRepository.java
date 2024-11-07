@@ -10,5 +10,5 @@ import com.example.entity.Account;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, String>{
     Optional<Account> findByUsernameAndPassword(String username, String password);
-
+    Optional<Account> findByAccountId(int accountId);
 }

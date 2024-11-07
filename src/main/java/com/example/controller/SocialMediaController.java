@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,8 +43,12 @@ public class SocialMediaController {
 
     @PostMapping("register")
     public ResponseEntity<Account> register(@RequestBody Account account){
-        accountService.register(account);
-        return ResponseEntity.status(HttpStatus.OK).body(account);
+        boolean successful = accountService.register(account);
+        if(successful==true){
+            return ResponseEntity.status(HttpStatus.OK).body(account);
+        } else{
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
     }
 
     @PostMapping("login")
@@ -58,8 +63,8 @@ public class SocialMediaController {
 
     @PostMapping("messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message message){
-        boolean successful = messageService.createMessage(message);
-        if(successful==true){
+        boolean status = messageService.createMessage(message);
+        if(status==true){
             return ResponseEntity.status(HttpStatus.OK).body(message);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -84,14 +89,18 @@ public class SocialMediaController {
     }
 
     @DeleteMapping("messages/{messageId}")
-    public ResponseEntity<Void> deleteMessage(@PathVariable int messageId){
-        messageService.deleteMessage(messageId);
+    public ResponseEntity<Integer> deleteMessage(@PathVariable int messageId){
+        boolean success = messageService.deleteMessage(messageId);
+        if(success==true){
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @PatchMapping("messages/{messageId}")
-    public ResponseEntity<Message> updateMessage(@PathVariable int messageId, @RequestParam String messageText){
-        Message updatedMessage = messageService.updateMessage(messageId, messageText);
+    public ResponseEntity<Message> updateMessage(@PathVariable int messageId, @RequestBody HashMap data){
+        String newMessageText = (String) data.get("messageText");
+        Message updatedMessage = messageService.updateMessage(messageId,newMessageText);
         return ResponseEntity.status(HttpStatus.OK).body(updatedMessage);
     }
 }

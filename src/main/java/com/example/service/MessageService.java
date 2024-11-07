@@ -1,10 +1,13 @@
 package com.example.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
@@ -21,6 +24,8 @@ public class MessageService {
         this.accountRepository = accountRepository;
     }
     public boolean createMessage(Message message){
+        Optional<Account> foundAccount = accountRepository.findByAccountId(message.getPostedBy());
+        if(!foundAccount.isPresent()) return false;
         if(message.getMessageText().length()>0 && message.getMessageText().length()<=255){
             messageRepository.save(message);
             return true;
@@ -37,8 +42,14 @@ public class MessageService {
         List<Message> userMessages = messageRepository.findByPostedBy(accountId);
         return userMessages;
     }
-    public void deleteMessage (int messageId){
-        messageRepository.deleteByMessageId(messageId);
+    public boolean deleteMessage (int messageId){
+        Message foundMessage = messageRepository.findByMessageId(messageId);
+        if(foundMessage!=null){
+            messageRepository.deleteByMessageId(messageId);
+            return true;
+        } else {
+            return false;
+        }
     }
     public Message updateMessage(int messageId, String messageText){
         Message updatedMessage = messageRepository.findByMessageId(messageId);

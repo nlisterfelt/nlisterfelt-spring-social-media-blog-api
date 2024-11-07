@@ -19,9 +19,14 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public void register(Account newAccount){
-        
-        accountRepository.save(newAccount);
+    public boolean register(Account newAccount){
+        Optional<Account> foundAccount = accountRepository.findByUsernameAndPassword(newAccount.getUsername(), newAccount.getPassword());
+        if(foundAccount.isPresent()){
+            return false;
+        }else{
+            accountRepository.save(newAccount);
+            return true;
+        }
     }
 
     public Account login(String username, String password){
